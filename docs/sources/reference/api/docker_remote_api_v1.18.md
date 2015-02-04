@@ -161,7 +161,8 @@ Create a container
                "RestartPolicy": { "Name": "", "MaximumRetryCount": 0 },
                "NetworkMode": "bridge",
                "Devices": [],
-               "Ulimits": [{}]
+               "Ulimits": [{}],
+               "LogConfig": { "Type": "json-file", Config: {} }
             }
         }
 
@@ -255,6 +256,9 @@ Json Parameters:
   -   **Ulimits** - A list of ulimits to be set in the container, specified as
         `{ "Name": <name>, "Soft": <soft limit>, "Hard": <hard limit> }`, for example:
         `Ulimits: { "Name": "nofile", "Soft": 1024, "Hard", 2048 }}`
+  -   **LogConfig** - Logging configuration to container, format
+        `{ "Type": "<driver_name>", "Config": {"key1": "val1"}}
+        Available types: `json-file`, `none`.
 
 Query Parameters:
 
@@ -352,6 +356,7 @@ Return low-level information on the container `id`
 				"MaximumRetryCount": 2,
 				"Name": "on-failure"
 			},
+           "LogConfig": { "Type": "json-file", Config: {} },
 			"SecurityOpt": null,
 			"VolumesFrom": null,
 			"Ulimits": [{}]

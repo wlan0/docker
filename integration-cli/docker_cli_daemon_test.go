@@ -677,3 +677,26 @@ func TestDaemonLoggingDriverNoneOverride(t *testing.T) {
 	}
 	logDone("daemon - 'none' logging driver override in run")
 }
+
+func TestDaemonLoggingDriverNoneLogsError(t *testing.T) {
+	d := NewDaemon(t)
+
+	if err := d.StartWithBusybox("--log-driver=none"); err != nil {
+		t.Fatal(err)
+	}
+	defer d.Stop()
+
+	out, err := d.Cmd("run", "-d", "busybox", "echo", "testline")
+	if err != nil {
+		t.Fatal(out, err)
+	}
+	id := strings.TrimSpace(out)
+	out, err = d.Cmd("logs", id)
+	if err == nil {
+		t.Fatalf("Logs should fail with \"none\" driver")
+	}
+	if !strings.Contains(out, `\"logs\" command is supported only for \"default\" logging driver`) {
+		t.Fatalf("There should be error about non-default driver, got %s", out)
+	}
+	logDone("daemon - logs not available for non-default drivers")
+}

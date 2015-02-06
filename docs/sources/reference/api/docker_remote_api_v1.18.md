@@ -251,7 +251,8 @@ Json Parameters:
         `Ulimits: { "Name": "nofile", "Soft": 1024, "Hard", 2048 }}`
   -   **LogConfig** - Logging configuration to container, format
         `{ "Type": "<driver_name>", "Config": {"key1": "val1"}}
-        Available types: `default`, `none`.
+        Available types: `default`, `none`. `logs` endpoint works only for
+        `default` logging driver.
 
 Query Parameters:
 
@@ -440,6 +441,9 @@ Status Codes:
 `GET /containers/(id)/logs`
 
 Get stdout and stderr logs from the container ``id``
+
+> **Note**:
+> This endpoint works only for containers with `default` logging driver.
 
 **Example request**:
 

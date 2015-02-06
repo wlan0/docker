@@ -1487,3 +1487,12 @@ func (container *Container) getNetworkedContainer() (*Container, error) {
 func (container *Container) Stats() (*execdriver.ResourceStats, error) {
 	return container.daemon.Stats(container)
 }
+
+func (c *Container) LogDriverType() string {
+	c.Lock()
+	defer c.Unlock()
+	if c.hostConfig.LogConfig.Type == "" {
+		return c.daemon.DefaultLogConfig.Type
+	}
+	return c.hostConfig.LogConfig.Type
+}

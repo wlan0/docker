@@ -21,6 +21,7 @@ import (
 	"github.com/docker/docker/daemon/execdriver"
 	"github.com/docker/docker/daemon/logger"
 	"github.com/docker/docker/daemon/logger/dockerlog"
+	"github.com/docker/docker/daemon/logger/syslog"
 	"github.com/docker/docker/engine"
 	"github.com/docker/docker/image"
 	"github.com/docker/docker/links"
@@ -1369,8 +1370,19 @@ func (container *Container) startLogging() error {
 		if err != nil {
 			return err
 		}
-
-		dl, err := dockerlog.New(pth)
+		var dl logger.Logger
+		var logErr error
+		if cfg.Capacity == "" {
+			dl, logErr = dockerlog.New(pth)
+		} else {
+			dl, logErr = dockerlog.NewWithCap(pth, cfg.Capacity, cfg.LogFileCount)
+		}
+		if logErr != nil {
+			return logErr
+		}
+		l = dl
+	case "syslog":
+		dl, err := syslog.New(container.Name[1:] + ":" + container.ID[:12] + ": ")
 		if err != nil {
 			return err
 		}

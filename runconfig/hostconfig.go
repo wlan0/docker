@@ -100,8 +100,10 @@ type RestartPolicy struct {
 }
 
 type LogConfig struct {
-	Type   string
-	Config map[string]string
+	Type         string
+	Capacity     string
+	Config       map[string]string
+	LogFileCount int
 }
 
 type HostConfig struct {

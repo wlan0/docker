@@ -83,7 +83,9 @@ func (config *Config) InstallFlags() {
 	opts.LabelListVar(&config.Labels, []string{"-label"}, "Set key=value labels to the daemon")
 	config.Ulimits = make(map[string]*ulimit.Ulimit)
 	opts.UlimitMapVar(config.Ulimits, []string{"-default-ulimit"}, "Set default ulimits for containers")
-	flag.StringVar(&config.LogConfig.Type, []string{"-log-driver"}, "default", "Containers logging driver(default/none)")
+	flag.StringVar(&config.LogConfig.Type, []string{"-log-driver"}, "default", "Containers logging driver(default/syslog/none)")
+	flag.StringVar(&config.LogConfig.Capacity, []string{"-log-capacity"}, "", "The max size of the logfile (1k/1m/1g...)")
+	flag.IntVar(&config.LogConfig.LogFileCount, []string{"-log-files"}, 2, "The maximum number of log files to rotate amongst")
 }
 
 func getDefaultNetworkMtu() int {

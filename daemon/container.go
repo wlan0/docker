@@ -99,6 +99,7 @@ type Container struct {
 	// Easier than migrating older container configs :)
 	VolumesRW      map[string]bool
 	VolumesRelabel map[string]string
+	VolumesPrivate map[string]bool
 	hostConfig     *runconfig.HostConfig
 
 	activeLinks  map[string]*links.Link

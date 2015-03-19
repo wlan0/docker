@@ -25,6 +25,7 @@ type Mount struct {
 	Relabel     string
 	copyData    bool
 	from        *Container
+	Private      bool
 }
 
 func (mnt *Mount) Export(resource string) (io.ReadCloser, error) {
@@ -44,6 +45,7 @@ func (container *Container) prepareVolumes() error {
 		container.Volumes = make(map[string]string)
 		container.VolumesRW = make(map[string]bool)
 		container.VolumesRelabel = make(map[string]string)
+		container.VolumesPrivate = make(map[string]bool)
 	}
 
 	return container.createVolumes()
@@ -104,6 +106,7 @@ func (m *Mount) initialize() error {
 	m.container.VolumesRW[m.MountToPath] = m.Writable
 	m.container.VolumesRelabel[m.MountToPath] = m.Relabel
 	m.container.Volumes[m.MountToPath] = m.volume.Path
+	m.container.VolumesPrivate[m.MountToPath] = m.Private
 	m.volume.AddContainer(m.container.ID)
 	if m.Writable && m.copyData {
 		// Copy whatever is in the container at the mntToPath to the volume
@@ -157,7 +160,7 @@ func (container *Container) parseVolumeMountConfig() (map[string]*Mount, error) 
 	var mounts = make(map[string]*Mount)
 	// Get all the bind mounts
 	for _, spec := range container.hostConfig.Binds {
-		path, mountToPath, writable, mode, err := parseBindMountSpec(spec)
+		path, mountToPath, writable, private, mode, err := parseBindMountSpec(spec)
 		if err != nil {
 			return nil, err
 		}
@@ -176,6 +179,7 @@ func (container *Container) parseVolumeMountConfig() (map[string]*Mount, error) 
 			MountToPath: mountToPath,
 			Writable:    writable,
 			Relabel:     mode,
+			Private:     private,
 		}
 	}
 
@@ -214,10 +218,11 @@ func (container *Container) parseVolumeMountConfig() (map[string]*Mount, error) 
 	return mounts, nil
 }
 
-func parseBindMountSpec(spec string) (string, string, bool, string, error) {
+func parseBindMountSpec(spec string) (string, string, bool, bool, string, error) {
 	var (
 		path, mountToPath string
 		writable          bool
+		private           bool
 		mode              string
 		arr               = strings.Split(spec, ":")
 	)
@@ -227,25 +232,26 @@ func parseBindMountSpec(spec string) (string, string, bool, string, error) {
 		path = arr[0]
 		mountToPath = arr[1]
 		writable = true
+		private = true
 	case 3:
 		path = arr[0]
 		mountToPath = arr[1]
 		mode = arr[2]
 		if !validMountMode(mode) {
-			return "", "", false, "", fmt.Errorf("Invalid volume specification: %s", spec)
+			return "", "", false, false,  "", fmt.Errorf("Invalid volume specification: %s", spec)
 		}
-		writable = rwModes[mode]
+		writable, private = getMountPropogationType(mode)
 	default:
-		return "", "", false, "", fmt.Errorf("Invalid volume specification: %s", spec)
+		return "", "", false, false, "", fmt.Errorf("Invalid volume specification: %s", spec)
 	}
 
 	if !filepath.IsAbs(path) {
-		return "", "", false, "", fmt.Errorf("cannot bind mount volume: %s volume paths must be absolute.", path)
+		return "", "", false, false,  "", fmt.Errorf("cannot bind mount volume: %s volume paths must be absolute.", path)
 	}
 
 	path = filepath.Clean(path)
 	mountToPath = filepath.Clean(mountToPath)
-	return path, mountToPath, writable, mode, nil
+	return path, mountToPath, writable, private, mode, nil
 }
 
 func parseVolumesFromSpec(spec string) (string, string, error) {
@@ -333,8 +339,40 @@ var roModes = map[string]bool{
 	"Zro": true,
 }
 
+func getMountPropogationType(mode string) (bool, bool) {
+	public := false
+	writable := false
+	for _, val := range mode {
+		if val == 'p' {
+			public = true
+		}
+		if val == 'w' {
+			writable = true
+		}
+	}
+	return writable, !public
+}
+
 func validMountMode(mode string) bool {
-	return roModes[mode] || rwModes[mode]
+	validModeUnits := []string{"rw", "ro", "z", "Z", "p"}
+	i := 0
+	for i < len(mode) {
+		prevI := i
+		for _, modeUnit := range validModeUnits {
+			j := len(modeUnit)
+			if i+j > len(mode) {
+				continue
+			}
+			if mode[i:i+j] == modeUnit {
+				i += j
+				break
+			}
+		}
+		if i == prevI {
+			return false
+		}
+	}
+	return true
 }
 
 func (container *Container) setupMounts() error {
@@ -351,6 +389,7 @@ func (container *Container) setupMounts() error {
 			Destination: path,
 			Writable:    container.VolumesRW[path],
 			Relabel:     container.VolumesRelabel[path],
+			Private:     container.VolumesPrivate[path],
 		})
 	}
 

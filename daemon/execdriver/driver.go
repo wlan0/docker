@@ -127,6 +127,7 @@ type Mount struct {
 	Relabel     string `json:"relabel"`
 	Private     bool   `json:"private"`
 	Slave       bool   `json:"slave"`
+	Shared      bool   `json:"shared"`
 }
 
 // Describes a process that will be run inside a container.

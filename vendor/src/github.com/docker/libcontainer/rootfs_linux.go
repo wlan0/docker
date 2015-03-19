@@ -131,9 +131,11 @@ func mount(m *configs.Mount, rootfs, mountLabel string) error {
 		if err := createIfNotExists(dest, stat.IsDir()); err != nil {
 			return err
 		}
+
 		if err := syscall.Mount(m.Source, dest, m.Device, uintptr(m.Flags), data); err != nil {
 			return err
 		}
+
 		if m.Flags&syscall.MS_RDONLY != 0 {
 			if err := syscall.Mount(m.Source, dest, m.Device, uintptr(m.Flags|syscall.MS_REMOUNT), ""); err != nil {
 				return err
@@ -145,10 +147,11 @@ func mount(m *configs.Mount, rootfs, mountLabel string) error {
 			}
 		}
 		if m.Flags&syscall.MS_PRIVATE != 0 {
-			if err := syscall.Mount("", dest, "none", uintptr(syscall.MS_PRIVATE), ""); err != nil {
+			if err := syscall.Mount("", dest, "none", uintptr(syscall.MS_PRIVATE|syscall.MS_REC), ""); err != nil {
 				return err
 			}
 		}
+
 	default:
 		return fmt.Errorf("unknown mount device %q to %q", m.Device, m.Destination)
 	}
@@ -262,9 +265,9 @@ func mknodDevice(dest string, node *configs.Device) error {
 }
 
 func prepareRoot(config *configs.Config) error {
-	flag := syscall.MS_PRIVATE | syscall.MS_REC
+	flag := syscall.MS_SLAVE|syscall.MS_REC
 	if config.NoPivotRoot {
-		flag = syscall.MS_SLAVE | syscall.MS_REC
+		flag = syscall.MS_SLAVE
 	}
 	if err := syscall.Mount("", "/", "", uintptr(flag), ""); err != nil {
 		return err

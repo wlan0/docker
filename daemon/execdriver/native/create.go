@@ -238,6 +238,10 @@ func (d *driver) setupMounts(container *configs.Config, c *execdriver.Command) e
 		if m.Slave {
 			flags |= syscall.MS_SLAVE
 		}
+		if m.Private {
+			fmt.Println("This is private", m.Source)
+			flags |= syscall.MS_PRIVATE
+		}
 
 		container.Mounts = append(container.Mounts, &configs.Mount{
 			Source:      m.Source,

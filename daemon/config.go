@@ -79,6 +79,7 @@ func (config *Config) InstallFlags() {
 	config.Ulimits = make(map[string]*ulimit.Ulimit)
 	opts.UlimitMapVar(config.Ulimits, []string{"-default-ulimit"}, "Set default ulimits for containers")
 	flag.StringVar(&config.LogConfig.Type, []string{"-log-driver"}, "json-file", "Default driver for container logs")
+	opts.LogOptsVar(config.LogConfig.Config, []string{"-log-opt"}, "Set log driver options")
 }
 
 func getDefaultNetworkMtu() int {

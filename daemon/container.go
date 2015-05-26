@@ -653,7 +653,10 @@ func (container *Container) SetHostConfig(hostConfig *runconfig.HostConfig) {
 
 func (container *Container) getLogConfig() runconfig.LogConfig {
 	cfg := container.hostConfig.LogConfig
-	if cfg.Type != "" { // container has log driver configured
+	if cfg.Type != "" || len(cfg.Config) > 0 { // container has log driver configured
+		if cfg.Type == "" {
+			cfg.Type = jsonfilelog.Name
+		}
 		return cfg
 	}
 	// Use daemon's default log config for containers

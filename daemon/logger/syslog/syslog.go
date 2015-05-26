@@ -55,3 +55,7 @@ func (s *Syslog) Name() string {
 func (s *Syslog) GetReader() (io.Reader, error) {
 	return nil, logger.ReadLogsNotSupported
 }
+
+func (s *Syslog) GetReaderByIndex(index int) (io.Reader, error) {
+	return nil, logger.ReadLogsNotSupported
+}

@@ -58,3 +58,7 @@ func (s *Journald) Name() string {
 func (s *Journald) GetReader() (io.Reader, error) {
 	return nil, logger.ReadLogsNotSupported
 }
+
+func (s *Journald) GetReaderByIndex(index int) (io.Reader, error) {
+	return nil, logger.ReadLogsNotSupported
+}

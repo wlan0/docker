@@ -23,6 +23,10 @@ func (l *TestLoggerJSON) GetReader() (io.Reader, error) {
 	return nil, errors.New("not used in the test")
 }
 
+func (l *TestLoggerJSON) GetReaderByIndex(index int) (io.Reader, error) {
+	return nil, errors.New("not used in the test")
+}
+
 type TestLoggerText struct {
 	*bytes.Buffer
 }

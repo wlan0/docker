@@ -22,4 +22,5 @@ type Logger interface {
 	Name() string
 	Close() error
 	GetReader() (io.Reader, error)
+	GetReaderByIndex(index int) (io.Reader, error)
 }

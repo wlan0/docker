@@ -177,7 +177,7 @@ type ValidatorFctType func(val string) (string, error)
 type ValidatorFctListType func(val string) ([]string, error)
 
 func ValidateLogOpts(val string) (string, error) {
-	allowedKeys := map[string]string{}
+	allowedKeys := map[string]string{"max-file": "1", "max-size": "2"}
 	vals := strings.Split(val, "=")
 	if allowedKeys[vals[0]] != "" {
 		return val, nil

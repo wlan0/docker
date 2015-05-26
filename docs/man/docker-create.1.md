@@ -148,6 +148,11 @@ two memory nodes.
   Logging driver for container. Default is defined by daemon `--log-driver` flag.
   **Warning**: `docker logs` command works only for `json-file` logging driver.
 
+**--log-opt**="|*max-file*|*max-size*"
+  max-file sets the number of files to rotate the logs amongst
+  max-size sets the max size of each of the log files
+  **Warning**: The current log opts `max-file` and `max-size` are applicable only for `json-file` driver
+
 **-m**, **--memory**=""
    Memory limit (format: <number><optional unit>, where unit = b, k, m or g)
 

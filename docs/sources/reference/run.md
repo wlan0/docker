@@ -873,6 +873,19 @@ this driver.
 Default logging driver for Docker. Writes JSON messages to file. `docker logs`
 command is available only for this logging driver
 
+Supports the following options using `--log-opts` flag - `max-size` and `max-file`
+
+### Log Opts : 
+
+Logging options for configuring a log driver. The following log options are supported
+
+driver : json-file
+
+options		description						examples
+
+max-file	the number of log files to rotate the logs		1k, 1M, 1G etc.
+max-size	the maximum size of each of the log files		10, 20, 50 etc.
+
 #### Logging driver: syslog
 
 Syslog logging driver for Docker. Writes log messages to syslog. `docker logs`

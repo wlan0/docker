@@ -162,7 +162,7 @@ Create a container
                "NetworkMode": "bridge",
                "Devices": [],
                "Ulimits": [{}],
-               "LogConfig": { "Type": "json-file", Config: {} },
+               "LogConfig": { "Type": "json-file", Config: {"max-file": "10", "max-size": "1G"} },
                "SecurityOpt": [""],
                "CgroupParent": ""
             }
@@ -262,6 +262,9 @@ Json Parameters:
           `{ "Type": "<driver_name>", "Config": {"key1": "val1"}}`.
           Available types: `json-file`, `syslog`, `none`.
           `json-file` logging driver.
+    -     Available Config: `max-size`, `max-file` (only for `json-file` logging driver)
+	  `max-size` maximum size of the each of the log files
+	  `max-file` maximum number of log files
     -   **CgroupParent** - Path to cgroups under which the cgroup for the container will be created. If the path is not absolute, the path is considered to be relative to the cgroups path of the init process. Cgroups will be created if they do not already exist.
 
 Query Parameters:

@@ -149,3 +149,7 @@ func parseFacility(facility string) (syslog.Priority, error) {
 
 	return syslog.Priority(0), errors.New("invalid syslog facility")
 }
+
+func (s *Syslog) GetReaderByIndex(index int) (io.Reader, error) {
+	return nil, logger.ReadLogsNotSupported
+}

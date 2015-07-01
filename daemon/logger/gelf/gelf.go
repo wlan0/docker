@@ -117,6 +117,10 @@ func (s *GelfLogger) GetReader() (io.Reader, error) {
 	return nil, logger.ReadLogsNotSupported
 }
 
+func (s *GelfLogger) GetReaderByIndex(index int) (io.Reader, error) {
+	return nil, logger.ReadLogsNotSupported
+}
+
 func (s *GelfLogger) Close() error {
 	return s.writer.Close()
 }

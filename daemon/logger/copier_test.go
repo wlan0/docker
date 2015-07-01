@@ -40,6 +40,10 @@ func (l *TestLoggerText) GetReader() (io.Reader, error) {
 	return nil, errors.New("not used in the test")
 }
 
+func (l *TestLoggerJSON) GetReaderByIndex(index int) (io.Reader, error) {
+	return nil, errors.New("not used in the test")
+}
+
 func TestCopier(t *testing.T) {
 	stdoutLine := "Line that thinks that it is log line from docker stdout"
 	stderrLine := "Line that thinks that it is log line from docker stderr"

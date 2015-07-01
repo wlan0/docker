@@ -127,3 +127,7 @@ func (f *Fluentd) Name() string {
 func (s *Fluentd) GetReader() (io.Reader, error) {
 	return nil, logger.ReadLogsNotSupported
 }
+
+func (s *Fluentd) GetReaderByIndex(index int) (io.Reader, error) {
+	return nil, logger.ReadLogsNotSupported
+}
